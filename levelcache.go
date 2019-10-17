@@ -3,8 +3,8 @@ package levelcache
 import "strings"
 
 type Node struct {
-	value    string
-	leaf bool
+	key      string
+	leaf     bool
 	children map[string]*Node
 }
 
@@ -15,16 +15,16 @@ type Trie struct {
 // /hello/world/
 func (t *Trie) insert(value string) {
 	node := t.root
-	for pos, str := range ParseStr(value) {
+	for index, str := range ParseStr(value) {
 		if _, ok := node.children[str]; !ok {
 			node.children[str] = &Node{
-				value:    str,
+				key:      str,
 				children: make(map[string]*Node),
 			}
 		}
 
 		node = node.children[str]
-		if pos == len(ParseStr(value))-1 {
+		if index == len(ParseStr(value))-1 {
 			node.leaf = true
 		}
 	}
