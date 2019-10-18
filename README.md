@@ -3,7 +3,7 @@
 
 
 example:
-
+```
 import "fmt"
 import "github.com/rambutan-soft/LevelCache"
 cache := levelcache.New()
@@ -26,3 +26,4 @@ nodes = cache.Find("/hello/")
 if len(nodes) != 5 {
     fmt.Printf("Expected value to be 5, but it was %d instead.", len(nodes))
 }
+```
