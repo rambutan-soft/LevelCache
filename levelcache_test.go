@@ -4,53 +4,45 @@ import (
 	"testing"
 )
 
-func TestFindExisting(t *testing.T) {
-	trie := New()
-	trie.insert("/hello/world/cache/")
-	node, ok := trie.find("/hello/")
+func TestKeyFind(t *testing.T) {
+	cache := New()
+	cache.Set("/hello/world/cache/", []byte("hello"))
 
-	if node.key != "hello" {
-		t.Errorf("Expected value to be t, but it was %s instead.", node.key)
+	_, err := cache.Get("/hello/")
+	if err == nil {
+		t.Error("Expected error, but no error")
 	}
 
-	if node.leaf != false {
-		t.Errorf("Expected value to be true, but it was %t instead.", node.leaf)
+	v, err := cache.Get("/hello/world/cache/")
+	if err != nil {
+		t.Error("Expected no error, but get error")
 	}
 
-	if !ok {
-		t.Errorf("Expected ok to be true, but it was %t instead.", ok)
-	}
-
-	node2, ok := trie.find("/hello/world/cache")
-
-	if node2.key != "cache" {
-		t.Errorf("Expected value to be t, but it was %s instead.", node2.key)
-	}
-
-	if node2.leaf != true {
-		t.Errorf("Expected value to be true, but it was %t instead.", node2.leaf)
-	}
-
-	if !ok {
-		t.Errorf("Expected ok to be true, but it was %t instead.", ok)
+	if string(v) != "hello" {
+		t.Errorf("Expected [hello], but got %s", v)
 	}
 }
 
-func TestFindExisting2(t *testing.T) {
-	trie := New()
-	trie.insert("/hello/world/cache/")
-	trie.insert("/hello/world/cache1/")
-	trie.insert("/hello/world/cache2/")
-	trie.insert("/hello/world1/cache/")
-	trie.insert("/hello/world1/cache1/")
+func TestKeyTree(t *testing.T) {
+	cache := New()
+	cache.Set("/hello/world/cache/", []byte("hello"))
+	cache.Set("/hello/world/cache1/", []byte("hello"))
+	cache.Set("/hello/world/cache2/", []byte("hello"))
+	cache.Set("/hello/world1/cache3/", []byte("hello"))
+	cache.Set("/hello/world1/cache4/", []byte("hello"))
 
-	node, _ := trie.find("/hello/")
-	if len(node.children) != 2 {
-		t.Errorf("Expected value to be 2, but it was %d instead.", len(node.children))
+	nodes := cache.Find("/hello/world/cache/")
+	if len(nodes) != 1 {
+		t.Errorf("Expected value to be 1, but it was %d instead.", len(nodes))
+	}
+	nodes = cache.Find("/hello/world/")
+	if len(nodes) != 3 {
+		t.Errorf("Expected value to be 3, but it was %d instead.", len(nodes))
 	}
 
-	node, _ = trie.find("/hello/world")
-	if len(node.children) != 3 {
-		t.Errorf("Expected value to be 2, but it was %d instead.", len(node.children))
+	nodes = cache.Find("/hello/")
+	if len(nodes) != 5 {
+		t.Errorf("Expected value to be 5, but it was %d instead.", len(nodes))
 	}
+
 }
