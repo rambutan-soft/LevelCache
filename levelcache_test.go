@@ -46,3 +46,57 @@ func TestKeyTree(t *testing.T) {
 	}
 
 }
+
+func BenchmarkInsert(b *testing.B) {
+	// run the Fib function b.N times
+	cache := New()
+	//b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cache.Set(string(n), []byte("123.456788"))
+	}
+}
+
+func BenchmarkGet(b *testing.B) {
+	// run the Fib function b.N times
+	cache := New()
+	//b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cache.Set(string(n), []byte("123.456788"))
+	}
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cache.Get(string(n))
+	}
+}
+
+func BenchmarkParallelInsert(b *testing.B) {
+	cache := New()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.Set(string(b.N), []byte("123.456788"))
+		}
+	})
+}
+
+func BenchmarkParallelGet(b *testing.B) {
+	cache := New()
+	//b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		cache.Set(string(n), []byte("123.456788"))
+	}
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			cache.Set(string(b.N), []byte("123.456788"))
+		}
+	})
+}
+
+//BenchmarkInsert-4   	 1000000	      2138 ns/op	     456 B/op	       5 allocs/op
+//BenchmarkParallelInsert-4   	 1000000	      1060 ns/op	     137 B/op	       3 allocs/op
+
+// allocs/op means how many distinct memory allocations occurred per op (single iteration).
+// B/op is how many bytes were allocated per op.
+//go test -bench=. -benchmem -cpuprofile profile.out
+
+//ogo tool pprof profile.out
