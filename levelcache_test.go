@@ -100,3 +100,5 @@ func BenchmarkParallelGet(b *testing.B) {
 //go test -bench=. -benchmem -cpuprofile profile.out
 
 //ogo tool pprof profile.out
+//go test -bench=. -benchmem -memprofile memprofile.out -cpuprofile profile.out
+//
